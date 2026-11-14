@@ -1,0 +1,26 @@
+{
+  "description": "Effect-edge rules from @punks/lints/effect: run an Effect only at an Effect edge, no Promise round trip, no empty-context run, no unowned fork, and an `Effect edge:` reason on each Effect suppression.",
+  "id": "effect-edge",
+  "jsPlugins": [
+    {
+      "name": "punks-effect",
+      "specifier": "@punks/lints/effect"
+    }
+  ],
+  "oxlintPresets": [],
+  "plugins": [],
+  "requiredDevDependencies": [
+    "@punks/lints"
+  ],
+  "requiredDevDependencyVersions": {
+    "@punks/lints": "0.2.0"
+  },
+  "rules": {
+    "punks-effect/no-empty-context-run": "error",
+    "punks-effect/no-promise-round-trip": "error",
+    "punks-effect/no-unowned-fork": "error",
+    "punks-effect/run-only-at-edges": "error",
+    "punks-effect/suppression-reason": "error"
+  },
+  "settings": {}
+}

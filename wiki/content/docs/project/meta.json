@@ -1,0 +1,17 @@
+{
+  "title": "Project",
+  "description": "Internal project operations",
+  "pages": [
+    "index",
+    "domains",
+    "grilling",
+    "research",
+    "reviews",
+    "specs",
+    "tech-debt",
+    "maintenance",
+    "runbooks",
+    "decisions",
+    "repo-guidance"
+  ]
+}

@@ -1,0 +1,15 @@
+---
+title: Repo Guidance
+description: Repository-specific operating guidance
+surface: project
+permission: project
+---
+
+Use this section for durable repository guidance that agents should discover through the wiki.
+
+## Agent guidance layout
+
+- `AGENTS.md` (root) routes work: surface map, workflow phases, cross-surface contracts, validation. `src/AGENTS.md` and `wiki/AGENTS.md` hold each scope's `## Skills` trigger table. Each has a sibling `CLAUDE.md` symlink.
+- `.agents/rules/index.md` is the Rule Registry: one checkable invariant per file, activated by path or task trigger. Add a rule only with current code evidence or an accepted decision.
+- `.agents/subagents/manifest.mjs` is authored; run `hi update` after editing it to rebuild `.claude/`, `.codex/`, `.cursor/`, and `.opencode/` agent files.
+- `.devpunks/installed.json` records the installed `hi` Baseline. `hi check` reports drift; `hi update` applies the latest Baseline and keeps locally edited files.

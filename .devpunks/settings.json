@@ -1,0 +1,28 @@
+{
+  "assetProviderSlug": "github",
+  "backlogProvider": "github",
+  "commitGate": "enabled",
+  "lint": {
+    "exclude": [],
+    "scopes": []
+  },
+  "packs": [
+    "debug",
+    "docs",
+    "effect",
+    "frontend",
+    "nextjs",
+    "planning",
+    "quality",
+    "react",
+    "requirements",
+    "research",
+    "subagents",
+    "tanstack-query",
+    "typescript"
+  ],
+  "repositoryManager": "github",
+  "requiredTools": [
+    "gh"
+  ]
+}

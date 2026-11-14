@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/format-edited-file.mjs cursor"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/scaffold-update-check.mjs cursor",
+        "timeout": 60000
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "node .agents/scripts/test-resource-sweep.mjs --detach",
+        "timeout": 10000
+      }
+    ]
+  }
+}

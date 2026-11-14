@@ -1,0 +1,12 @@
+{
+  "description": "Ultracite Next.js preset for the main web application.",
+  "id": "next-core",
+  "jsPlugins": [],
+  "oxlintPresets": [
+    "next"
+  ],
+  "plugins": [],
+  "requiredDevDependencies": [],
+  "rules": {},
+  "settings": {}
+}

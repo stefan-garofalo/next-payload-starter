@@ -1,0 +1,7 @@
+#!/bin/sh
+# Project-scoped Vercel CLI. Credentials live in .vercel/cli (gitignored), so
+# this repo stays on its own account whatever the global `vercel login` is.
+# direnv puts this file first on PATH (.envrc); it then runs the real CLI.
+root=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
+PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -vxF "$root/scripts/bin" | paste -sd: -)
+exec vercel --global-config "$root/.vercel/cli" "$@"

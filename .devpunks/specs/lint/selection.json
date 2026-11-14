@@ -1,0 +1,45 @@
+{
+  "finalPacks": [
+    "debug",
+    "docs",
+    "effect",
+    "frontend",
+    "nextjs",
+    "planning",
+    "quality",
+    "react",
+    "requirements",
+    "research",
+    "subagents",
+    "tanstack-query",
+    "typescript"
+  ],
+  "managedLint": {
+    "exclude": [],
+    "routes": [],
+    "scopes": [],
+    "version": 1
+  },
+  "requiredDevDependencies": [
+    "oxfmt",
+    "oxlint",
+    "ultracite"
+  ],
+  "selectedAssetIds": [
+    "effect-edge",
+    "effect-no-barrel-imports",
+    "effect-tsgo-recommended",
+    "next-core",
+    "next-leafmost-suspense",
+    "punks-anti-slop-transition",
+    "punks-backoffice-canonical",
+    "punks-cli-canonical",
+    "react-core",
+    "react-frontend-layers",
+    "react-you-might-not-need-an-effect",
+    "tanstack-query-core",
+    "typescript-anti-slop",
+    "vitest-core"
+  ],
+  "selectedAssetsByScope": {}
+}

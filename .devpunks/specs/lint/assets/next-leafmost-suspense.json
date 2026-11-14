@@ -1,0 +1,22 @@
+{
+  "description": "Leafmost-Suspense rule from @punks/lints/next: with cacheComponents on, each data read gets its own <Suspense> at the leaf.",
+  "id": "next-leafmost-suspense",
+  "jsPlugins": [
+    {
+      "name": "punks-next",
+      "specifier": "@punks/lints/next"
+    }
+  ],
+  "oxlintPresets": [],
+  "plugins": [],
+  "requiredDevDependencies": [
+    "@punks/lints"
+  ],
+  "requiredDevDependencyVersions": {
+    "@punks/lints": "0.1.0"
+  },
+  "rules": {
+    "punks-next/leafmost-suspense": "error"
+  },
+  "settings": {}
+}
