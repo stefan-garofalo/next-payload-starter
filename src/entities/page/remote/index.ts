@@ -1,0 +1,1 @@
+export { remotePageSource } from "./search";

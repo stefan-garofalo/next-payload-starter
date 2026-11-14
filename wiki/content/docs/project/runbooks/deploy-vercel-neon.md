@@ -54,7 +54,7 @@ Without the S3 variables, Payload disables the S3 storage and uploads go to the 
 
 `bun run build` runs `sh scripts/migrate-unless-preview.sh && next build`:
 
-1. `payload migrate` applies the committed migrations in `src/migrations/` to the database. Payload `push` is off everywhere. **Vercel Preview builds skip this step**: they share the production database, so a Preview of an unmerged schema change would change production before merge. Instead, that Preview build fails when its code needs a migration that production does not have yet.
+1. `payload migrate` applies the committed migrations in `src/server/cms/migrations/` to the database. Payload `push` is off everywhere. **Vercel Preview builds skip this step**: they share the production database, so a Preview of an unmerged schema change would change production before merge. Instead, that Preview build fails when its code needs a migration that production does not have yet.
 2. `next build` prerenders the static shells. It reads Payload, so the database must be reachable at build time.
 
 A schema change always ships with a new migration: `bun run payload:migration:create <name>`, then commit it. Production applies it on the next deploy.

@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 
 # Project Context
-Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Biome's lightning-fast formatter and linter.
+Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Oxlint and Oxfmt (managed lint: `bun run lint`, format: `bun run format`).
 
 ## Key Principles
 - Zero configuration required

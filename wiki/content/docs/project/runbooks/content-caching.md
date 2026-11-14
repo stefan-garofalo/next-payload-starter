@@ -9,13 +9,13 @@ permission: project
 
 `next.config.ts` sets `cacheComponents: true` (Cache Components). Content stays cached until an edit invalidates it. There is no time-based expiry.
 
-- **Read:** every Payload read on the frontend goes through a tagged reader in `src/modules/content/readers.ts`. Each reader is a `"use cache"` function with `cacheLife("max")` and the tags of the resource it reads. Pages and components do not call Payload directly.
-- **Write:** Payload `afterChange` / `afterDelete` hooks (`src/payload/modules/revalidation/`) send the affected tags to `POST /api/revalidate/tags`.
-- **Invalidate:** only that Route Handler calls `revalidateTag(tag, { expire: 0 })`. `expire: 0` makes the next request render fresh content instead of stale content.
+- **Read:** every Payload read on the frontend goes through a tagged reader in an entity's `remote/server.ts` (`src/entities/page/remote/server.ts`, `src/entities/site/remote/server.ts`). Each reader is a `"use cache"` function with `cacheLife("max")` and the tags of the resource it reads. Pages and components do not call Payload directly.
+- **Write:** Payload `afterChange` / `afterDelete` hooks (`src/server/cms/revalidation-hooks.ts`, sending through `src/server/revalidation/sender.ts`) send the affected tags to `POST /api/revalidate/tags`.
+- **Invalidate:** only that Route Handler (`src/server/revalidation/server.ts`, re-exported at `src/app/api/revalidate/tags/route.ts`) calls `revalidateTag(tag, { expire: 0 })`. `expire: 0` makes the next request render fresh content instead of stale content.
 
 ## Tags
 
-The tag helpers are in `src/modules/content/tags.ts`.
+The tag helpers are in `src/server/revalidation/tags.ts` (the `server/revalidation` contract).
 
 | Tag             | Set by                                                                     | Sent when                                                |
 | --------------- | -------------------------------------------------------------------------- | -------------------------------------------------------- |
@@ -40,8 +40,8 @@ Every save sends the tags, draft saves included: Payload's `previousDoc` is the 
 
 For a new collection served at a slug (for example `posts`):
 
-1. In `src/modules/content/tags.ts`: add tag helpers (`post:<slug>`, `post-id:<id>`, `posts`), add the collection to `SlugCollection` and `DOC_TAGS`, and extend `CONTENT_TAG_PATTERN`. Tags that do not match the pattern are rejected by the route.
-2. In `src/modules/content/readers.ts`: add `"use cache"` readers with `cacheLife("max")`, the slug tag before the query, the id tag when a document is found, and the list tag on list readers. Pass each result through the media tagging, so images in it get `media:<id>` tags.
+1. In `src/server/revalidation/tags.ts`: add tag helpers (`post:<slug>`, `post-id:<id>`, `posts`), add the collection to `SlugCollection` and `DOC_TAGS`, and extend `CONTENT_TAG_PATTERN`. Tags that do not match the pattern are rejected by the route.
+2. In a new entity, `src/entities/<name>/remote/server.ts` (first line `import "server-only"`): add `"use cache"` readers with `cacheLife("max")`, the slug tag before the query, the id tag when a document is found, and the list tag on list readers. Add `mediaTags(...)` for the upload fields the document shows (see `pageMediaIds` in the page entity).
 3. On the collection config: add `createCollectionAfterChangeRevalidateHook("<slug>")` and `createCollectionAfterDeleteRevalidateHook("<slug>")`.
 4. For a new global: add its slug to `CONTENT_GLOBALS`, the pattern, a reader with `globalTag(slug)`, and `createGlobalAfterChangeRevalidateHook(slug)`.
 

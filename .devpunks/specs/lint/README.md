@@ -46,7 +46,7 @@ with a '.ts' extension when 'allowImportingTsExtensions' is enabled"). The proje
 
 ## Software Scopes
 
-No Software Scopes are selected; managed lint is disabled.
+- `.`: `effect-edge`, `effect-no-barrel-imports`, `effect-tsgo-recommended`, `next-core`, `next-leafmost-suspense`, `react-core`, `react-frontend-layers`, `react-you-might-not-need-an-effect`, `tanstack-query-core`, `typescript-anti-slop`, `vitest-core`
 
 ## Selected assets
 

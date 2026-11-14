@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs"
-import { type } from "arktype"
+import { createEnv } from "@t3-oss/env-nextjs";
+import { type } from "arktype";
 
 export const env = createEnv({
   server: {
@@ -35,12 +35,11 @@ export const env = createEnv({
     // environment: canonical URLs and revalidation target production.
     NEXT_PUBLIC_FRONTEND_URL:
       process.env.NEXT_PUBLIC_FRONTEND_URL ??
-      (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
-        ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
-        : "http://localhost:3000"),
-    NEXT_PUBLIC_APP_NAME:
-      process.env.NEXT_PUBLIC_APP_NAME ?? "Next Payload Starter",
+      (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL === undefined
+        ? "http://localhost:3000"
+        : `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`),
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "Next Payload Starter",
     NEXT_PUBLIC_MEDIA_BASE_URL: process.env.NEXT_PUBLIC_MEDIA_BASE_URL,
     VERCEL_ENV: process.env.VERCEL_ENV,
   },
-})
+});

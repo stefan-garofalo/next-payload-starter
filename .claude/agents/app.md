@@ -67,12 +67,12 @@ Before working in a directory, read every `AGENTS.md` from the root down to each
 
 ## Surface Map
 
-| Surface | Owns | Stays elsewhere |
-| --- | --- | --- |
-| `src/` ([`src/AGENTS.md`](src/AGENTS.md)) | Next.js + Payload starter: frontend `src/app/(frontend)` (pages at `/` and `/<slug>`), Payload admin/API `src/app/(payload)`, schema `src/payload/`, migrations `src/migrations/`, shared modules `src/modules/` (content readers, Effect runtime, XState bridge, query, i18n, ui), features `src/features/`, generated `src/payload-types.ts` | Durable requirements, specs, decisions, runbooks |
-| `wiki/` ([`wiki/AGENTS.md`](wiki/AGENTS.md)) | Fumadocs project wiki: requirements, specs, decisions, runbooks, backlog context, ingest bookkeeping | App runtime code |
-| Root config: `alchemy.run.ts` (R2 bucket, Vercel env sync), `next.config.ts`, `vercel.json`, `scripts/` | Infra and deploy wiring | Runtime app code |
-| `.agents/`, `.devpunks/` | Harness skills, rules, hooks, subagent manifest, `hi` installed record | Product code; `hi update` owns copied and built artifacts |
+| Surface                                                                                                 | Owns                                                                                                                                                                                                                                                   | Stays elsewhere                                           |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| `src/` ([`src/AGENTS.md`](src/AGENTS.md))                                                               | Next.js + Payload starter in the frontend layer model: routes `src/app/`, `composition/`, `features/`, `entities/`, `modules/`, `integrations/`, `ui/`, plus `server/` (Payload schema and migrations, revalidation); generated `src/payload-types.ts` | Durable requirements, specs, decisions, runbooks          |
+| `wiki/` ([`wiki/AGENTS.md`](wiki/AGENTS.md))                                                            | Fumadocs project wiki: requirements, specs, decisions, runbooks, backlog context, ingest bookkeeping                                                                                                                                                   | App runtime code                                          |
+| Root config: `alchemy.run.ts` (R2 bucket, Vercel env sync), `next.config.ts`, `vercel.json`, `scripts/` | Infra and deploy wiring                                                                                                                                                                                                                                | Runtime app code                                          |
+| `.agents/`, `.devpunks/`                                                                                | Harness skills, rules, hooks, subagent manifest, `hi` installed record                                                                                                                                                                                 | Product code; `hi update` owns copied and built artifacts |
 
 Route single-surface work to that surface's prompt. For cross-surface work, name the owning surfaces before editing.
 
@@ -97,7 +97,7 @@ Hand implementation to scoped workers in plan-derived waves; launch every unbloc
 
 ## Validation Routing
 
-- Run the narrowest proof first: `bun run typecheck`, `bun run lint`, `bun test`, then `bun run build` when routing or config changes.
+- Run the narrowest proof first: `bun run typecheck`, `bun run lint` (managed oxlint, tsrs type-aware), `bun run test` (vitest), then `bun run build` when routing or config changes.
 - Schema change → `bun run payload:typegen` and `bun run payload:migration:create`; route change → `bun run next:typegen`.
 - Infra change → `bun run infra:plan`.
 - User-facing change → browser check of the affected route, plus `design-taste-frontend` inspect for page design.
@@ -126,38 +126,49 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ### src/AGENTS.md
 ## App Guidance
 
-`src/` owns the Next.js + Payload app:
+`src/` is the Next.js + Payload app, laid out in the fixed frontend layer model (`frontend-domain-structure`; the `frontend-layers` lint rules enforce it). Each layer imports only lower layers, across domains only through a domain's `index.ts`.
 
-- `app/(frontend)`: public pages from the `pages` collection at `/` (slug `home`) and `/<slug>`, `not-found`, sitemap. `app/(payload)`: Payload admin and REST/GraphQL API. `app/api/revalidate/tags`: the only place that calls `revalidateTag`.
-- `payload/`: collections (`pages`, `users`, `media`), globals (`header`, `footer`), blocks (`hero`, `content`), fields, access, revalidation hooks. `migrations/`: committed schema migrations. `payload-types.ts`: generated.
-- `modules/`: shared mechanics. `content` (tagged `"use cache"` readers, tags, routes), `effect` (browser services and the one `AppRuntime`), `machines` (`fromEffect`, the XState ↔ Effect bridge), `query` (TanStack provider and `effectQueryFn`), `i18n` (`en`/`it` dictionaries, `SITE_LANG`), `ui` (shadcn components, theme, primitives).
-- `features/`: product slices. `content` renders pages, blocks, header and footer; `site-search` is the reference interactive island (machine + component).
+| Folder                 | Owns                                                                                                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`                 | Route files only: one-line re-exports from `composition/routing`. `app/(payload)/` is generated by Payload. `app/api/revalidate/tags` re-exports `server/revalidation/server.ts`.            |
+| `composition/`         | `providers/` (the global query client), `routing/shells/site/` (root layout; the only place that selects Data Sources), `routing/pages/<page>/` (page templates, metadata, sitemap, robots). |
+| `features/`            | `navigation` (header, footer, mobile menu; data arrives as promises, awaited in leaf `Suspense`), `site-search` (the reference XState machine + component).                                  |
+| `entities/`            | `page` (contract, `PageSource` port, `pageSearchQuery`, block views; `remote/` browser source and `remote/server.ts` cached readers), `site` (header/footer globals).                        |
+| `modules/`             | Product-free mechanics: `query` (`getQueryClient`, `effectQueryFn`), `machines` (`fromQuery`), `effect` (`AppRuntime`), `i18n` (`en`/`it`, `SITE_LANG`), `theme`.                            |
+| `integrations/payload` | Payload adapters: `isMedia`, `MediaImage`, live-preview refresh.                                                                                                                             |
+| `ui/`                  | shadcn components (`components/`, CLI-owned) and primitives (`button-link`, `fonts`, `cn`).                                                                                                  |
+| `server/`              | `cms` (Payload schema, access, hooks, `migrations/`; `server.ts` = Local API), `revalidation` (tag contract, sender, the `revalidateTag` handler), `pages` (slug routes contract).           |
 
-Read every Payload resource on the server through the readers in `modules/content/readers.ts`; Payload hooks invalidate tags only through `/api/revalidate/tags` ([content caching](../wiki/content/docs/project/runbooks/content-caching.md)). Client logic follows the [frontend state architecture](../wiki/content/docs/project/decisions/frontend-state-architecture.md): Effect owns IO and typed failures, XState owns flows, TanStack Query owns cached client reads, and Server Components stay the default. Import Effect modules by path (`effect/Effect`, `effect/http/HttpClient`), never from the `effect` barrel. Read [`../.agents/rules/index.md`](../.agents/rules/index.md) and apply every matching rule. Read [`../opensrc/README.md`](../opensrc/README.md) when work depends on third-party library behavior.
+Root files: `payload.config.ts`, `env.ts`, generated `payload-types.ts`.
 
-When work here changes setup, contracts, env, or non-obvious behavior, update the relevant `wiki/content/docs/project/` page or runbook in the same task.
+- **Async data:** every browser read goes through the TanStack Query cache: components use `useQuery`, machines invoke `fromQuery` (`@/modules/machines`). Effect programs run only inside `effectQueryFn`. `fetch` lives only in an entity's `remote/` Data Source or in `server/`. Lint enforces all three ([frontend state architecture](../wiki/content/docs/project/decisions/frontend-state-architecture.md)).
+- **Server reads:** Payload resources are read through the tagged `"use cache"` readers in `entities/*/remote/server.ts`; hooks invalidate tags only through `/api/revalidate/tags` ([content caching](../wiki/content/docs/project/runbooks/content-caching.md)).
+- **Effect:** import modules by path (`effect/Effect`), never from the `effect` barrel; mark the one run site with `Effect edge: <reason>`.
+- **Lint and format:** `bun run lint` (managed oxlint with type-aware rules on tsrs) and `bun run format` (oxfmt). Project lint rules go in `../oxlint.local.ts`; `../oxlint.config.ts` is built by `hi update`.
+
+Read [`../.agents/rules/index.md`](../.agents/rules/index.md) and apply every matching rule. Read [`../opensrc/README.md`](../opensrc/README.md) when work depends on third-party library behavior. When work here changes setup, contracts, env, or non-obvious behavior, update the relevant `wiki/content/docs/project/` page or runbook in the same task.
 
 ## Skills
 
-| Skill | Exact trigger |
-| --- | --- |
-| [`next-best-practices`](../.agents/skills/next-best-practices/SKILL.md) | Editing routes, layouts, metadata, route handlers, or RSC boundaries under `src/app/` |
-| [`next-cache-components`](../.agents/skills/next-cache-components/SKILL.md) | Adding or changing caching, `use cache`, `cacheTag`, or revalidation |
-| [`payload`](../.agents/skills/payload/SKILL.md) | Editing `src/payload/**`, `src/payload.config.ts`, `src/migrations/**`, or Payload API usage |
-| [`effect`](../.agents/skills/effect/SKILL.md) | Writing Effect programs, schemas, HTTP calls, or tests under `src/modules/effect/`, `src/modules/machines/`, `src/modules/query/effect.ts`, or a feature |
-| [`effect-service-design`](../.agents/skills/effect-service-design/SKILL.md) | Adding or changing an Effect service, its `make`/`layer`, or `AppLayer` in `src/modules/effect/runtime.ts` |
-| [`tanstack-query`](../.agents/skills/tanstack-query/SKILL.md) | Editing `src/modules/query/` or any `useQuery`/`useMutation` usage |
-| [`vercel-react-best-practices`](../.agents/skills/vercel-react-best-practices/SKILL.md) | Writing or reviewing React components, data fetching, or bundle-affecting imports |
-| [`vercel-composition-patterns`](../.agents/skills/vercel-composition-patterns/SKILL.md) | Designing component APIs, compound components, or context providers |
-| [`async-react-patterns`](../.agents/skills/async-react-patterns/SKILL.md) | Adding Suspense, transitions, `use`, or async server/client data flow |
-| [`frontend-domain-structure`](../.agents/skills/frontend-domain-structure/SKILL.md) | Creating or moving code in `src/features/` or `src/modules/` |
-| [`design-taste-frontend`](../.agents/skills/design-taste-frontend/SKILL.md) | Designing or restyling a public page or section |
-| [`animate`](../.agents/skills/animate/SKILL.md) | Adding motion or transitions |
-| [`review-animations`](../.agents/skills/review-animations/SKILL.md) | Reviewing or fixing existing motion |
-| [`mobile-native`](../.agents/skills/mobile-native/SKILL.md) | Touch, viewport, or safe-area behavior on phones |
-| [`shadcn`](../.agents/skills/shadcn/SKILL.md) | Adding or changing components in `modules/ui/components` (`components.json`) |
-| [`agent-browser`](../.agents/skills/agent-browser/SKILL.md) | Verifying user-facing behavior in a real browser |
-| [`react-doctor`](../.agents/skills/react-doctor/SKILL.md) | Changing React runtime APIs, or on explicit request |
-| [`quality-types`](../.agents/skills/quality-types/SKILL.md) | Adding or changing shared TypeScript types |
-| [`tdd`](../.agents/skills/tdd/SKILL.md) | Changing behavior covered by or needing `*.test.ts` (machines, services, tags, routes) |
-| [`simplify`](../.agents/skills/simplify/SKILL.md) | Finishing any code change in this scope |
+| Skill                                                                                   | Exact trigger                                                                                                    |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [`frontend-domain-structure`](../.agents/skills/frontend-domain-structure/SKILL.md)     | Creating, moving, or importing across folders under `src/`, or fixing a `frontend-layers` lint error             |
+| [`next-best-practices`](../.agents/skills/next-best-practices/SKILL.md)                 | Editing routes, layouts, metadata, route handlers, or RSC boundaries in `src/app/` or `src/composition/routing/` |
+| [`next-cache-components`](../.agents/skills/next-cache-components/SKILL.md)             | Adding or changing caching, `use cache`, `cacheTag`, or revalidation                                             |
+| [`payload`](../.agents/skills/payload/SKILL.md)                                         | Editing `src/server/cms/**`, `src/payload.config.ts`, or Payload API usage                                       |
+| [`tanstack-query`](../.agents/skills/tanstack-query/SKILL.md)                           | Adding or changing a query, `queryOptions`, `useQuery`/`useMutation`, or `src/modules/query/`                    |
+| [`effect`](../.agents/skills/effect/SKILL.md)                                           | Writing Effect programs, schemas, Data Sources, or their tests                                                   |
+| [`effect-service-design`](../.agents/skills/effect-service-design/SKILL.md)             | Adding an Effect service or a layer to `AppLayer` in `src/modules/effect/`                                       |
+| [`vercel-react-best-practices`](../.agents/skills/vercel-react-best-practices/SKILL.md) | Writing or reviewing React components, data fetching, or bundle-affecting imports                                |
+| [`vercel-composition-patterns`](../.agents/skills/vercel-composition-patterns/SKILL.md) | Designing component APIs, slots, compound components, or providers                                               |
+| [`async-react-patterns`](../.agents/skills/async-react-patterns/SKILL.md)               | Adding Suspense, `use`, transitions, or passing promises to components                                           |
+| [`design-taste-frontend`](../.agents/skills/design-taste-frontend/SKILL.md)             | Designing or restyling a public page or section                                                                  |
+| [`animate`](../.agents/skills/animate/SKILL.md)                                         | Adding motion or transitions                                                                                     |
+| [`review-animations`](../.agents/skills/review-animations/SKILL.md)                     | Reviewing or fixing existing motion                                                                              |
+| [`mobile-native`](../.agents/skills/mobile-native/SKILL.md)                             | Touch, viewport, or safe-area behavior on phones                                                                 |
+| [`shadcn`](../.agents/skills/shadcn/SKILL.md)                                           | Adding or changing components in `src/ui/components` (`components.json`)                                         |
+| [`agent-browser`](../.agents/skills/agent-browser/SKILL.md)                             | Verifying user-facing behavior in a real browser                                                                 |
+| [`react-doctor`](../.agents/skills/react-doctor/SKILL.md)                               | Changing React runtime APIs, or on explicit request                                                              |
+| [`quality-types`](../.agents/skills/quality-types/SKILL.md)                             | Adding or changing shared TypeScript types or contracts                                                          |
+| [`tdd`](../.agents/skills/tdd/SKILL.md)                                                 | Changing behavior covered by or needing a `*.test.ts(x)` (vitest)                                                |
+| [`simplify`](../.agents/skills/simplify/SKILL.md)                                       | Finishing any code change in this scope                                                                          |

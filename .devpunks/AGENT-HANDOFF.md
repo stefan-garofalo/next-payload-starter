@@ -35,7 +35,7 @@ To change the Packs, run `hi init` again or edit `packs` in `.devpunks/settings.
 
 ## Software Scopes
 
-- No Software Scope is set in `.devpunks/settings.json`.
+- `.`
 
 ## Recorded Shape
 

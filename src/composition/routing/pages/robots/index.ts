@@ -1,0 +1,1 @@
+export { robots } from "./robots";

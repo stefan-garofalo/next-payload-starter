@@ -15,14 +15,54 @@
     "typescript"
   ],
   "managedLint": {
-    "exclude": [],
-    "routes": [],
-    "scopes": [],
+    "exclude": [
+      "src/app/(payload)/**",
+      "src/payload-types.ts",
+      "src/server/cms/migrations/**",
+      "src/ui/components/**"
+    ],
+    "routes": [
+      {
+        "config": "oxlint.config.ts",
+        "inputs": [
+          ".devpunks/settings.json",
+          ".devpunks/specs/lint/selection.json",
+          "bun.lock",
+          "bun.lockb",
+          "oxlint.config.ts",
+          "oxlint.local.ts",
+          "package-lock.json",
+          "package.json",
+          "pnpm-lock.yaml",
+          "pnpm-workspace.yaml",
+          "tools/oxlint/anti-slop/index.mjs",
+          "tools/oxlint/frontend-layers/index.mjs",
+          "yarn.lock"
+        ],
+        "maxWarnings": 0,
+        "scope": ".",
+        "tool": {
+          "package": "oxlint",
+          "typeAwareBackend": "tsrs"
+        }
+      }
+    ],
+    "scopes": [
+      "."
+    ],
     "version": 1
   },
   "requiredDevDependencies": [
+    "@effect/eslint-plugin",
+    "@effect/tsgo",
+    "@oxlint/plugins",
+    "@punks/lints",
+    "@typescript-eslint/utils",
+    "eslint",
+    "eslint-plugin-react-you-might-not-need-an-effect",
     "oxfmt",
     "oxlint",
+    "oxlint-tsgolint",
     "ultracite"
   ],
   "selectedAssetIds": [
@@ -41,5 +81,19 @@
     "typescript-anti-slop",
     "vitest-core"
   ],
-  "selectedAssetsByScope": {}
+  "selectedAssetsByScope": {
+    ".": [
+      "effect-edge",
+      "effect-no-barrel-imports",
+      "effect-tsgo-recommended",
+      "next-core",
+      "next-leafmost-suspense",
+      "react-core",
+      "react-frontend-layers",
+      "react-you-might-not-need-an-effect",
+      "tanstack-query-core",
+      "typescript-anti-slop",
+      "vitest-core"
+    ]
+  }
 }

@@ -48,7 +48,7 @@ When the `S3_*` variables are empty, Payload disables the S3 storage and keeps m
 bun run payload migrate
 ```
 
-Payload `push` is disabled everywhere. The schema comes only from the committed migrations in `src/migrations/`.
+Payload `push` is disabled everywhere. The schema comes only from the committed migrations in `src/server/cms/migrations/`.
 
 ## 5. Run
 
@@ -61,7 +61,7 @@ bun run dev
 ## Language
 
 - The Payload admin supports `en` (fallback) and `it`.
-- The public site has one language and no locale routing. `SITE_LANG` in `src/modules/i18n/config/index.ts` selects it (default `en`). The UI strings for each language are in `src/modules/i18n/dict/`.
+- The public site has one language and no locale routing. `SITE_LANG` in `src/modules/i18n/config.ts` selects it (default `en`). The UI strings for each language are in `src/modules/i18n/dictionaries/`.
 
 ## Schema changes
 
@@ -74,3 +74,14 @@ bun run payload migrate                          # apply it locally
 ```
 
 Commit the migration with the schema change. Production applies it in its build ([deploy runbook](./deploy-vercel-neon.md#2-build-order)).
+
+## Check, lint and format
+
+```bash
+bun run typecheck   # tsc
+bun run lint        # managed oxlint: every hi lint asset, type-aware rules on tsrs
+bun run test        # vitest
+bun run format      # oxfmt
+```
+
+`oxlint.config.ts` is built by `hi update` from `.devpunks/settings.json` (`lint.scopes`, `lint.exclude`, `lint.typeAwareBackend: "tsrs"`); project rules go in `oxlint.local.ts`. The lefthook commit gate runs lint and `oxfmt --check` on staged files. Generated and CLI-owned files (`src/app/(payload)/`, `src/payload-types.ts`, migrations, `src/ui/components/`) are excluded from both.

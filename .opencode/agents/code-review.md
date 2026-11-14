@@ -39,12 +39,12 @@ Before working in a directory, read every `AGENTS.md` from the root down to each
 
 ## Surface Map
 
-| Surface | Owns | Stays elsewhere |
-| --- | --- | --- |
-| `src/` ([`src/AGENTS.md`](src/AGENTS.md)) | Next.js + Payload starter: frontend `src/app/(frontend)` (pages at `/` and `/<slug>`), Payload admin/API `src/app/(payload)`, schema `src/payload/`, migrations `src/migrations/`, shared modules `src/modules/` (content readers, Effect runtime, XState bridge, query, i18n, ui), features `src/features/`, generated `src/payload-types.ts` | Durable requirements, specs, decisions, runbooks |
-| `wiki/` ([`wiki/AGENTS.md`](wiki/AGENTS.md)) | Fumadocs project wiki: requirements, specs, decisions, runbooks, backlog context, ingest bookkeeping | App runtime code |
-| Root config: `alchemy.run.ts` (R2 bucket, Vercel env sync), `next.config.ts`, `vercel.json`, `scripts/` | Infra and deploy wiring | Runtime app code |
-| `.agents/`, `.devpunks/` | Harness skills, rules, hooks, subagent manifest, `hi` installed record | Product code; `hi update` owns copied and built artifacts |
+| Surface                                                                                                 | Owns                                                                                                                                                                                                                                                   | Stays elsewhere                                           |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| `src/` ([`src/AGENTS.md`](src/AGENTS.md))                                                               | Next.js + Payload starter in the frontend layer model: routes `src/app/`, `composition/`, `features/`, `entities/`, `modules/`, `integrations/`, `ui/`, plus `server/` (Payload schema and migrations, revalidation); generated `src/payload-types.ts` | Durable requirements, specs, decisions, runbooks          |
+| `wiki/` ([`wiki/AGENTS.md`](wiki/AGENTS.md))                                                            | Fumadocs project wiki: requirements, specs, decisions, runbooks, backlog context, ingest bookkeeping                                                                                                                                                   | App runtime code                                          |
+| Root config: `alchemy.run.ts` (R2 bucket, Vercel env sync), `next.config.ts`, `vercel.json`, `scripts/` | Infra and deploy wiring                                                                                                                                                                                                                                | Runtime app code                                          |
+| `.agents/`, `.devpunks/`                                                                                | Harness skills, rules, hooks, subagent manifest, `hi` installed record                                                                                                                                                                                 | Product code; `hi update` owns copied and built artifacts |
 
 Route single-surface work to that surface's prompt. For cross-surface work, name the owning surfaces before editing.
 
@@ -69,7 +69,7 @@ Hand implementation to scoped workers in plan-derived waves; launch every unbloc
 
 ## Validation Routing
 
-- Run the narrowest proof first: `bun run typecheck`, `bun run lint`, `bun test`, then `bun run build` when routing or config changes.
+- Run the narrowest proof first: `bun run typecheck`, `bun run lint` (managed oxlint, tsrs type-aware), `bun run test` (vitest), then `bun run build` when routing or config changes.
 - Schema change → `bun run payload:typegen` and `bun run payload:migration:create`; route change → `bun run next:typegen`.
 - Infra change → `bun run infra:plan`.
 - User-facing change → browser check of the affected route, plus `design-taste-frontend` inspect for page design.

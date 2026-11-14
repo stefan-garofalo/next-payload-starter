@@ -9,7 +9,7 @@ After a Payload schema change, run `bun run payload:typegen` and commit the rege
 
 ## Activation
 
-- Paths: `src/payload/collections/**`, `src/payload/globals/**`, `src/payload/fields/**`, `src/payload.config.ts`
+- Paths: `src/server/cms/collections/**`, `src/server/cms/globals/**`, `src/server/cms/fields/**`, `src/server/cms/blocks/**`, `src/payload.config.ts`
 - Tasks: change a Payload field, collection, or global
 
 ## Verification

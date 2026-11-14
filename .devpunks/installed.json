@@ -2,7 +2,15 @@
   "baseline": "2026.11.13-e6e52f90",
   "dependencies": {
     ".": [
-      "lefthook"
+      "@effect/eslint-plugin",
+      "@effect/tsgo",
+      "@oxlint/plugins",
+      "@punks/lints",
+      "@typescript-eslint/utils",
+      "lefthook",
+      "oxfmt",
+      "oxlint",
+      "oxlint-tsgolint"
     ]
   },
   "detectedPacks": [
@@ -2470,6 +2478,26 @@
     "opensrc/tanstack-query.md": {
       "artifact": "copied",
       "item": "source-guide-tanstack-query"
+    },
+    "oxlint.config.ts": {
+      "artifact": "built",
+      "item": "managed-lint"
+    },
+    "oxlint.local.ts": {
+      "artifact": "authored",
+      "item": "managed-lint"
+    },
+    "tools/oxlint/anti-slop/LICENSE": {
+      "artifact": "copied",
+      "item": "lint-typescript-anti-slop"
+    },
+    "tools/oxlint/anti-slop/index.mjs": {
+      "artifact": "copied",
+      "item": "lint-typescript-anti-slop"
+    },
+    "tools/oxlint/frontend-layers/index.mjs": {
+      "artifact": "copied",
+      "item": "lint-react-frontend-layers"
     }
   },
   "schemaVersion": 1,

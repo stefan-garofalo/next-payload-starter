@@ -3,8 +3,16 @@
   "backlogProvider": "github",
   "commitGate": "enabled",
   "lint": {
-    "exclude": [],
-    "scopes": []
+    "exclude": [
+      "src/app/(payload)/**",
+      "src/payload-types.ts",
+      "src/server/cms/migrations/**",
+      "src/ui/components/**"
+    ],
+    "scopes": [
+      "."
+    ],
+    "typeAwareBackend": "tsrs"
   },
   "packs": [
     "debug",

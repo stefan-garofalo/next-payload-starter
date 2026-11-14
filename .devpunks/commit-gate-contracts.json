@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "execution": {
+      "formatCheck": "files",
+      "lint": "files"
+    },
+    "formatCheck": "oxfmt --check --no-error-on-unmatched-pattern {files}",
+    "lint": "node \".agents/scripts/managed-lint-runner.mjs\" --scope \".\" --files-from {files-from}",
+    "owner": ".",
+    "path": "."
+  }
+]

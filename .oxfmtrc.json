@@ -1,3 +1,10 @@
 {
-  "ignorePatterns": ["**/tools/oxlint/**"]
+  "ignorePatterns": [
+    "**/oxlint.config.ts",
+    "**/tools/oxlint/**",
+    "src/app/(payload)/**",
+    "src/payload-types.ts",
+    "src/server/cms/migrations/**",
+    "src/ui/components/**"
+  ]
 }

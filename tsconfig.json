@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,17 +21,12 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@payload-config": ["./src/payload.config.ts"]
     },
-    "baseUrl": ".",
     "target": "ESNext",
-    "composite": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "**/*.ts",
@@ -54,7 +45,7 @@
     ".cursor",
     ".devpunks",
     ".opencode",
-    "src/migrations/**/*.ts",
+    "src/server/cms/migrations/**/*.ts",
     "node_modules",
     "wiki"
   ]

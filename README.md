@@ -7,8 +7,9 @@ A Next.js 16 + Payload 3 starter: Postgres, media on Cloudflare R2, deployed on 
 - **CMS**: Payload with `pages` (blocks `hero`, `content`), `users` (admin, editor and contributor roles), `media` and the `header` and `footer` globals. Drafts, the SEO plugin and committed migrations are set up. The admin is in English and Italian.
 - **Rendering**: Cache Components. Every Payload read goes through tagged `"use cache"` readers. Payload hooks invalidate exactly the touched tags, so pages stay static and refresh on the next request after an edit.
 - **Media**: the Payload S3 adapter writes to an R2 bucket that `alchemy.run.ts` creates. Admin uploads go from the browser straight to R2. Without the S3 variables, media stays on local disk.
-- **Client logic**: Effect services (typed errors, Schema decoding, `HttpClient`) run on one `ManagedRuntime`. XState machines invoke them through `fromEffect`, and leaving a state cancels the request. TanStack Query runs Effects through `effectQueryFn`. The reference island is `src/features/site-search` (Cmd/Ctrl+K).
-- **i18n**: `en` and `it` UI dictionaries. `SITE_LANG` in `src/modules/i18n/config` picks the site language.
+- **Client logic**: every async read goes through the TanStack Query cache. Entities expose `queryOptions` whose `queryFn` runs an Effect program (typed errors, Schema decoding) through `effectQueryFn`. XState machines own the flows and read only through `fromQuery`, so leaving a state cancels the query, its Effect and its request. Lint rejects `fetch`, ad-hoc promise actors and Effect runs outside that path. The reference island is `src/features/site-search` (Cmd/Ctrl+K).
+- **Structure and lint**: the fixed frontend layer model (`app` → `composition` → `features` → `entities` → `modules` → `integrations` → `ui`, plus `server`), enforced by managed oxlint with every `hi` asset and type-aware rules on tsrs. Oxfmt formats; the lefthook commit gate runs both on staged files.
+- **i18n**: `en` and `it` UI dictionaries. `SITE_LANG` in `src/modules/i18n/config.ts` picks the site language.
 - **Harness**: `hi` baseline with skills, rules, hooks and subagents in `.agents/` and `.devpunks/`, plus a Fumadocs project wiki in `wiki/`.
 
 ## Start
@@ -24,14 +25,15 @@ The runbooks in `wiki/content/docs/project/runbooks/` cover each step: local set
 
 ## Commands
 
-| Command | Does |
-| --- | --- |
-| `bun run dev` | Dev server (HTTPS) |
-| `bun run typecheck` / `bun run lint` / `bun test` | Types, ESLint, unit tests |
-| `bun run build` | Migrate (except Vercel Preview) and build |
-| `bun run payload:typegen` | Regenerate `src/payload-types.ts` |
-| `bun run payload:migration:create` | New migration after a schema change |
-| `bun run infra:plan` / `bun run infra:deploy` | Plan or apply the R2 bucket and Vercel env |
+| Command                                               | Does                                            |
+| ----------------------------------------------------- | ----------------------------------------------- |
+| `bun run dev`                                         | Dev server (HTTPS)                              |
+| `bun run typecheck` / `bun run lint` / `bun run test` | Types, managed oxlint (tsrs type-aware), vitest |
+| `bun run format`                                      | Format with oxfmt                               |
+| `bun run build`                                       | Migrate (except Vercel Preview) and build       |
+| `bun run payload:typegen`                             | Regenerate `src/payload-types.ts`               |
+| `bun run payload:migration:create`                    | New migration after a schema change             |
+| `bun run infra:plan` / `bun run infra:deploy`         | Plan or apply the R2 bucket and Vercel env      |
 
 ## Make it yours
 
